@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "corepack": "^0.32.0",
+    "express": "^5.1.0",
+    "npx": "^10.2.2",
+    "yarn": "^1.22.22"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

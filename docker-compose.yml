@@ -1,0 +1,94 @@
+x-environment: &default-environment
+  DATABASE_URL: postgres://user:password@postgres:5432/database
+  SECRET_KEY: secret # best to run openssl rand -hex 32
+  PORT: 8000 # If changing, change the web service port too
+  EMAIL_URL: consolemail:// # Example smtp://email:password@smtp_url:port https://glitchtip.com/documentation/install#configuration
+  GLITCHTIP_DOMAIN: https://glitchtip.example.com # Change this to your domain
+  DEFAULT_FROM_EMAIL: email@example.com # Change this to your email
+  CELERY_WORKER_AUTOSCALE: "1,3" # Scale between 1 and 3 to prevent excessive memory usage. Change it or remove to set it to the number of cpu cores.
+
+# docker-compose exec web-glitchtip ./manage.py migrate  //to migrate all needed schemes and tables
+# there might be a question of making ./manage.py makemigrations to initiate the tables
+# then register in glitchtip localhost:8000 and you'll appear in users_user table
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - bd-network
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: database
+    ports:
+      - "27017:27017"
+    volumes:
+      - db-data:/data/db
+    networks:
+      - bd-network
+  redis:
+    image: redis:latest
+    networks:
+      - bd-network
+  keycloak:
+    image: keycloak/keycloak:latest
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_PORT: 5432
+      DB_DATABASE: database
+      DB_USER: user
+      DB_PASSWORD: password
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - bd-network
+    command: start-dev
+  web-glitchtip:
+    image: glitchtip/glitchtip
+    ports:
+      - "8000:8000"
+    environment: *default-environment
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - uploads-glitchtip:/code/uploads
+    networks:
+      - bd-network
+
+  backend-glitchtip:
+    image: glitchtip/glitchtip
+    command: ./bin/run-celery-with-beat.sh
+    depends_on:
+      - postgres
+      - redis
+    environment: *default-environment
+    restart: unless-stopped
+    volumes:
+      - uploads-glitchtip:/code/uploads
+    networks:
+      - bd-network
+networks:
+  bd-network:
+    driver: bridge
+volumes:
+  db-data:
+    driver: local
+  uploads-glitchtip:
