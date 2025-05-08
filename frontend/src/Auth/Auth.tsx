@@ -1,26 +1,26 @@
-import {
-  createContext,
-  ReactNode,
-  useEffect,
-  useReducer,
-  Dispatch,
-  SetStateAction,
-} from "react";
-import { UserInterface } from "../Models/user.model";
+import { createContext, ReactNode, useEffect } from "react";
 import { KeycloakInstance } from "keycloak-js";
-import { ACTIONS } from "../Store/Reducers/auth.reducer";
+// import { ACTIONS } from "../Store/Reducers/auth.reducer";
 import { useKeycloak } from "../Hooks/useKeycloak";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import store, { RootState } from "../Store/store";
 import {
-  keycloakReducer,
-  updateKeycloak,
+  setKeycloakInstance,
+  setAuthenticated,
+  setError,
+  setToken,
+  setRefToken,
 } from "../Store/Reducers/auth.reducer";
+import { isEqual } from "lodash";
 // import { exchangeCodeForToken } from "../Requests/accessTocken.requests";
+import { KEYCLOAK_INIT_CONFIG } from "../Constants/vars";
+import Keycloak from "keycloak-js";
 export type authContextType = {
   authenticated: boolean;
   error: string | null | {};
   keycloak: KeycloakInstance | null;
   // getMe: () => UserInterface | null;
-  doLogout: () => void;
+  logout: () => void;
   login: (clicked: boolean) => void;
 };
 
@@ -29,31 +29,38 @@ export const AuthContext = createContext<authContextType>({
   error: null,
   keycloak: null,
   // getMe: () => null,
-  doLogout: () => null,
+  logout: () => null,
   login: (boolean) => null,
 });
 
 export const AuthProvider = (props: { children: ReactNode }) => {
   const { keycloak, login, error, authorized } = useKeycloak();
 
-  const [state, dispatch] = useReducer(keycloakReducer, {
-    authenticated: false,
-    loading: false,
-    error: null,
-    keycloak: null,
-    token: null,
-    refToken: null,
-    parsedToken: null,
-  });
+  const dispatch = useDispatch();
 
-  // const getMe = (): UserInterface | null => {
-  //   if (user) {
-  //     return user;
-  //   }
-  //   return null;
-  // };
+  const authState = useSelector((state: RootState) => state.auth);
 
-  const doLogout = async () => {
+  useEffect(() => {
+    if (!isEqual(authState.keycloak, keycloak)) {
+      dispatch(setKeycloakInstance(keycloak));
+    }
+
+    if (authorized !== authState.authenticated) {
+      dispatch(setAuthenticated(authorized));
+    }
+  }, [keycloak, authorized]);
+
+  useEffect(() => {
+    if (error && authState.error !== error) dispatch(setError(error));
+  }, [error]);
+
+  const logout = async () => {
+    await keycloak?.logout();
+    dispatch(setAuthenticated(false));
+    //@ts-ignore
+    dispatch(setKeycloakInstance(new Keycloak(KEYCLOAK_INIT_CONFIG)));
+    dispatch(setToken(null));
+    dispatch(setRefToken(null));
     await keycloak.logout();
   };
 
@@ -62,7 +69,7 @@ export const AuthProvider = (props: { children: ReactNode }) => {
       value={{
         keycloak,
         // getMe,
-        doLogout,
+        logout,
         authenticated: authorized,
         error,
         login,

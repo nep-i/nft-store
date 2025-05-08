@@ -9,9 +9,8 @@ import { RepositoryFactory } from "./factory.repository";
 
 import log from "loglevel";
 
-import { store } from "../myStore";
+import store from "../Store/store";
 import { response } from "express";
-import Keycloak from "keycloak-js";
 import { KeycloakInstance } from "keycloak-js";
 import { Buffer } from "buffer";
 
@@ -20,7 +19,7 @@ export abstract class BaseApiRepository {
   protected publicAxiosInstance: AxiosInstance;
 
   protected static getTheKeycloakFromTheStore = (): KeycloakInstance => {
-    return store.getState().keycloak;
+    return store.getState().auth.keycloak;
   };
 
   abstract id: string;

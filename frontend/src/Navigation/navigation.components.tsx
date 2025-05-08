@@ -1,17 +1,33 @@
 import { Link } from "react-router";
-import { SiAboutdotme } from "react-icons/si";
-import { CiChat1 } from "react-icons/ci";
-import { SiBuymeacoffee } from "react-icons/si";
-import { MdForum } from "react-icons/md";
+import { Avatar } from "primereact/avatar";
+import artGallery from "./../Assets/last-gal.svg";
+import aboutMe from "./../Assets/hair-salon-svgrepo-com.svg";
+import feed from "./../Assets/rss-svgrepo-com.svg";
+import chats from "./../Assets/chats-2-svgrepo-com.svg";
 
 const Navigation = () => {
   const iconSize = "40";
+
+  const iconElm = (image: string) => {
+    return (
+      <div className="flex align-items-center">
+        <Avatar image={image} shape="square" size="large" />
+      </div>
+    );
+  };
+
   return (
+    // <nav style={{ display: "flex", gap: "2rem", width: "100%" }}>
+    //   <Link to="/about">{SiAboutdotme({ size: iconSize })}</Link>
+    //   <Link to="/chat">{CiChat1({ size: iconSize })}</Link>
+    //   <Link to="/forum">{MdForum({ size: iconSize })}</Link>
+    //   <Link to="/products">{SiBuymeacoffee({ size: iconSize })}</Link>
+    // </nav>
     <nav style={{ display: "flex", gap: "2rem", width: "100%" }}>
-      <Link to="/about">{SiAboutdotme({ size: iconSize })}</Link>
-      <Link to="/chat">{CiChat1({ size: iconSize })}</Link>
-      <Link to="/forum">{MdForum({ size: iconSize })}</Link>
-      <Link to="/products">{SiBuymeacoffee({ size: iconSize })}</Link>
+      <Link to="/about">{iconElm(aboutMe)}</Link>
+      <Link to="/chat">{iconElm(chats)}</Link>
+      <Link to="/forum">{iconElm(feed)}</Link>
+      <Link to="/products">{iconElm(artGallery)}</Link>
     </nav>
   );
 };

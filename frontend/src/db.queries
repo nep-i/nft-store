@@ -1,0 +1,119 @@
+CREATE TABLE Users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  username VARCHAR(100) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL
+);
+
+CREATE TABLE Products (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  owner_id UUID REFERENCES Users(id) ON DELETE CASCADE, -- Ensure deletion cascades
+  starting_price NUMERIC NOT NULL,
+  current_price NUMERIC NOT NULL,
+  price_history NUMERIC[],
+  metadata JSONB,
+  art_url TEXT NOT NULL,
+  art_blob BYTEA
+);
+
+CREATE TABLE ChatParticipants (
+  chat_id UUID REFERENCES Chats(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES Users(id) ON DELETE CASCADE,
+  PRIMARY KEY (chat_id, user_id)
+);
+
+CREATE TABLE CartProducts (
+  cart_id UUID REFERENCES Cart(id) ON DELETE CASCADE,
+  product_id UUID REFERENCES Products(id) ON DELETE CASCADE,
+  PRIMARY KEY (cart_id, product_id)
+);
+
+CREATE TABLE FavoriteProducts (
+  user_id UUID REFERENCES Users(id) ON DELETE CASCADE,
+  product_id UUID REFERENCES Products(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, product_id)
+);
+
+CREATE TABLE UserTransactionHistory (
+  user_id UUID REFERENCES Users(id) ON DELETE CASCADE,
+  transaction_id UUID REFERENCES Transactions(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, transaction_id)
+);
+
+
+CREATE TABLE Reviews (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID REFERENCES Products(id),
+  user_id UUID REFERENCES Users(id),
+  rating INT CHECK (rating BETWEEN 1 AND 5),
+  comment TEXT
+);
+
+CREATE TABLE Chats (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  participants UUID[] NOT NULL
+);
+
+CREATE TABLE Messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  chat_id UUID REFERENCES Chats(id),
+  sender_id UUID REFERENCES Users(id),
+  content TEXT NOT NULL,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Cart (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES Users(id),
+  product_ids UUID[]
+);
+
+CREATE TABLE Favorites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES Users(id),
+  favorite_product_ids UUID[]
+);
+
+CREATE TABLE Transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  buyer_id UUID REFERENCES Users(id),
+  seller_id UUID REFERENCES Users(id),
+  product_id UUID REFERENCES Products(id),
+  amount NUMERIC NOT NULL,
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE History (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES Users(id),
+  transaction_ids UUID[]
+);
+
+CREATE TABLE Feeds (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid()
+);
+
+CREATE TABLE Posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES Users(id),
+  message_id UUID REFERENCES Messages(id),
+  metadata JSONB,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Replies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES Posts(id),
+  message_id UUID REFERENCES Messages(id)
+);
+
+CREATE TABLE Replies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES Posts(id) ON DELETE CASCADE,
+  parent_message_id UUID REFERENCES Messages(id), -- Tracks parent reply
+  message_id UUID REFERENCES Messages(id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE Users ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE Users ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;

@@ -14,6 +14,8 @@ import { BrowserRouter } from "react-router";
 import { PrimeReactProvider } from "primereact/api";
 import { AuthProvider } from "./Auth/Auth";
 import * as Sentry from "@sentry/browser";
+import { Provider } from "react-redux";
+import store from "./Store/store";
 
 Sentry.init({
   dsn: "https://03270c2aab094dabbffc0cc26b918eb6@glitchtip.example.com/1",
@@ -24,13 +26,15 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <BrowserRouter>
-        <PrimeReactProvider>
-          <App />
-        </PrimeReactProvider>
-      </BrowserRouter>
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <BrowserRouter>
+          <PrimeReactProvider>
+            <App />
+          </PrimeReactProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </Provider>
   </React.StrictMode>
 );
 

@@ -10,8 +10,7 @@ const Start: FC = () => {
   // const { login, authenticated, keycloak, setKeycloak } =
   //   useContext(AuthContext);
 
-  const { login, authenticated, keycloak, setKeycloak } =
-    useContext(AuthContext);
+  const { authenticated, keycloak } = useContext(AuthContext);
   const [logged, setLogged] = useState<boolean>(authenticated);
   console.log(
     "***** start.page authorized keycloak-> ",

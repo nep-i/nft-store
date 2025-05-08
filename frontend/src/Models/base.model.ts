@@ -1,11 +1,15 @@
+import { entries } from "lodash";
+
 export default interface IEntityModel<T> {
   serialize: () => T;
   serializeForRespond?: () => T;
+
+  mapEntityArray?: () => T[];
 }
 
 export class BaseModel implements IEntityModel<Object> {
   public id?: string;
-  constructor(public params: { [key: string]: string } = {}) {
+  constructor(public params: { [key: string]: any } = {}) {
     this.id = params.id;
     return this;
   }
@@ -18,22 +22,15 @@ export class BaseModel implements IEntityModel<Object> {
     return { id: this.params.id };
   }
 
-  public static mapEntityArray(inputArray: any[], entityModel: any): any[] {
-    const returnArray: BaseModel[] = [];
+  public static mapEntityArray<T extends BaseModel>(
+    inputArray: any[],
+    model: { deserialize: (input: any) => T }
+  ): T[] {
+    const returnArray: T[] = [];
 
-    inputArray &&
-      inputArray.forEach((element: any) => {
-        returnArray.push(entityModel.deserialize(element));
-      });
-
+    inputArray?.forEach((element: any) => {
+      returnArray.push(model.deserialize(element));
+    });
     return returnArray;
-  }
-
-  public static StringToFloat(input: string): number {
-    return parseFloat(input);
-  }
-
-  public static FloatToString(input: number): string {
-    return input.toString();
   }
 }
