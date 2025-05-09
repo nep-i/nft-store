@@ -3,7 +3,7 @@ import Keycloak, { KeycloakInstance } from "keycloak-js";
 import { KEYCLOAK_INIT_CONFIG } from "../Constants/vars";
 
 export const useKeycloak = () => {
-  const [keycloak, setKeycloak] = useState<KeycloakInstance>(
+  const [keycloak, setKeycloak] = useState<Keycloak>(
     //@ts-ignore
     new Keycloak(KEYCLOAK_INIT_CONFIG)
   );
@@ -33,7 +33,7 @@ export const useKeycloak = () => {
         await keycloak
           .login()
           //@ts-ignore
-          .then((auth) => {
+          .then((auth: boolean) => {
             if (auth) {
               setAuthorized(auth);
               setKeycloak(keycloak);

@@ -7,11 +7,168 @@ x-environment: &default-environment
   DEFAULT_FROM_EMAIL: email@example.com # Change this to your email
   CELERY_WORKER_AUTOSCALE: "1,3" # Scale between 1 and 3 to prevent excessive memory usage. Change it or remove to set it to the number of cpu cores.
 
-# docker-compose exec web-glitchtip ./manage.py migrate  //to migrate all needed schemes and tables
+# docker-compose exec glitchtip ./manage.py migrate  //to migrate all needed schemes and tables
 # there might be a question of making ./manage.py makemigrations to initiate the tables
 # then register in glitchtip localhost:8000 and you'll appear in users_user table
 
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: http://localhost:4000/graphql
+      VITE_KEYCLOAK_URLhttp: //localhost:8080
+    depends_on:
+      - graphql
+      - keycloak
+    volumes:
+      - ./frontend/src:/app/src
+      - /app/node_modules
+    networks:
+      - local-network
+
+  nft-service:
+    image: python:3.11
+    working_dir: /app
+    volumes:
+      - ./nft-service:/app
+    command:
+      [
+        "sh",
+        "-c",
+        "pip install -r requirements.txt && python manage.py migrate runserver 0.0.0.0:8001",
+      ]
+    ports:
+      - "8001:8001"
+    environment:
+      NOMGO_URL: mongo://user:password@mongodb:27017/database
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - mongodb
+      - minio
+      - redis
+    networks:
+      - local-network
+
+  chat-service:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./chat-service:/app
+    command: ["sh", "-c", "npm install && npm start"]
+    ports:
+      - "3002:3002"
+    environment:
+      MONGO_URL: mongo://user:password@mongodb:27017/database
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - local-network
+
+  forum-service:
+    image: python:3.11
+    working_dir: /app
+    volumes:
+      - ./forum-service:/app
+    command:
+      [
+        "sh",
+        "-c",
+        "pip install -r requirements.txt && python manage.py migrate && runserver 0.0.0.0:8002",
+      ]
+    ports:
+      - "8002:8002"
+    environment:
+      POSTGRES_URL: postgres://user:password@postgres:5432
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - local-network
+
+  auth-service:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./auth-service:/app
+    command: ["sh", "-c", "npm install && npm start"]
+    ports:
+      - "3004:3004"
+    environment:
+      POSTGRES_URL: postgres://user:password@postgres:5432/database
+      KEYCLOAK_URL: http://keycloak:8080
+    depends_on:
+      - postgres
+      - keycloak
+    networks:
+      - local-network
+
+  blockchain:
+    image: trufflesuite/ganache
+    ports:
+      - "8545:8545"
+    command: >
+      ganache --wallet.seed my-seed-phrase --networkId 1337
+    networks:
+      - local-network
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - local-network
+
+  nginx:
+    image: nginx:1.23
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - graphql
+    networks:
+      - local-network
+
+  graphql:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./graphql:/app
+    command: ["sh", "-c", "npm install && npm start"]
+    ports:
+      - "4000:4000"
+    environment:
+      NFT_SERVICES_URL: http://nft-service:8001
+      CHAT_SERVICE_URL: http://chat-service:3002
+      FORUM_SERIVCE_URL: http://forum-service:8002
+      AUTH_SERVICE_URL: http://auth-serivce:3004
+    depends_on:
+      - nft-service
+      - chat-service
+      - forum-service
+      - auth-service
+    networks:
+      - local-network
+
   postgres:
     image: postgres:latest
     environment:
@@ -22,9 +179,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
-      - bd-network
+      - local-network
   mongodb:
     image: mongo:latest
     environment:
@@ -34,13 +191,13 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - db-data:/data/db
+      - mongo-data:/data/db
     networks:
-      - bd-network
+      - local-network
   redis:
     image: redis:latest
     networks:
-      - bd-network
+      - local-network
   keycloak:
     image: keycloak/keycloak:latest
     environment:
@@ -57,9 +214,9 @@ services:
     depends_on:
       - postgres
     networks:
-      - bd-network
+      - local-network
     command: start-dev
-  web-glitchtip:
+  glitchtip:
     image: glitchtip/glitchtip
     ports:
       - "8000:8000"
@@ -69,26 +226,20 @@ services:
       - postgres
       - redis
     volumes:
-      - uploads-glitchtip:/code/uploads
+      - glitchtip-data:/code/uploads
     networks:
-      - bd-network
+      - local-network
 
-  backend-glitchtip:
-    image: glitchtip/glitchtip
-    command: ./bin/run-celery-with-beat.sh
-    depends_on:
-      - postgres
-      - redis
-    environment: *default-environment
-    restart: unless-stopped
-    volumes:
-      - uploads-glitchtip:/code/uploads
-    networks:
-      - bd-network
 networks:
-  bd-network:
+  local-network:
     driver: bridge
 volumes:
-  db-data:
+  minio-data:
+    driver: local
+  mongo-data:
+    driver: local
+  glitchtip-data:
+    driver: local
+  postgres-data:
     driver: local
   uploads-glitchtip:
