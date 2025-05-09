@@ -101,6 +101,54 @@
       "last_modified": "2025-04-13T09:22:33Z",
       "resolved": "github:NixOS/nixpkgs/18dd725c29603f582cf1900e0d25f9f1063dbf11?lastModified=1744536153&narHash=sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg%2FN38%3D"
     },
+    "http-server@latest": {
+      "last_modified": "2025-05-06T08:06:31Z",
+      "resolved": "github:NixOS/nixpkgs/1cb1c02a6b1b7cf67e3d7731cbbf327a53da9679#http-server",
+      "source": "devbox-search",
+      "version": "14.1.1",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/rvjc18a70xyy5mhxmwp63ckdp1xs5cis-http-server-14.1.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/rvjc18a70xyy5mhxmwp63ckdp1xs5cis-http-server-14.1.1"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/65dnm4hlasn4fdb4556n1y7x0l1jdfcc-http-server-14.1.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/65dnm4hlasn4fdb4556n1y7x0l1jdfcc-http-server-14.1.1"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/wm5ars0zy7c0lhbgcar8svqa06n0dq73-http-server-14.1.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/wm5ars0zy7c0lhbgcar8svqa06n0dq73-http-server-14.1.1"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/l6brykzm6wzi868ywjkk72k351q3a8mn-http-server-14.1.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/l6brykzm6wzi868ywjkk72k351q3a8mn-http-server-14.1.1"
+        }
+      }
+    },
     "nodejs@latest": {
       "last_modified": "2025-04-02T13:00:31Z",
       "plugin_version": "0.0.2",
