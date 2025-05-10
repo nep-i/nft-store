@@ -1,6 +1,6 @@
 import Keycloak, { KeycloakInstance } from "keycloak-js";
-import { setToLocalStorage } from "../../Utils/storage";
-import { ActionDispatch } from "react";
+// import { setToLocalStorage } from "../../Utils/storage";
+// import { ActionDispatch } from "react";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { KEYCLOAK_INIT_CONFIG } from "../../Constants/vars";
 

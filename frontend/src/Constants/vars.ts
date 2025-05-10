@@ -26,10 +26,10 @@ export const REACT_APP_POSTGRE_DB_NAME: string = "";
 export const REACT_APP_POSTGRE_USER: string = "";
 
 export const KEYCLOAK_INIT_CONFIG = {
-  url: "http://localhost:3000/auth",
+  url: "http://localhost:8080",
   realm: "products",
   clientId: "account",
-  redirectUri: "http://localhost:3000/",
+  redirectUri: "http://localhost:3000",
   adapter: "default",
   onLoad: "login-required",
 };

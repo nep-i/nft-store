@@ -6,8 +6,6 @@ import feed from "./../Assets/rss-svgrepo-com.svg";
 import chats from "./../Assets/chats-2-svgrepo-com.svg";
 
 const Navigation = () => {
-  const iconSize = "40";
-
   const iconElm = (image: string) => {
     return (
       <div className="flex align-items-center">
@@ -17,12 +15,6 @@ const Navigation = () => {
   };
 
   return (
-    // <nav style={{ display: "flex", gap: "2rem", width: "100%" }}>
-    //   <Link to="/about">{SiAboutdotme({ size: iconSize })}</Link>
-    //   <Link to="/chat">{CiChat1({ size: iconSize })}</Link>
-    //   <Link to="/forum">{MdForum({ size: iconSize })}</Link>
-    //   <Link to="/products">{SiBuymeacoffee({ size: iconSize })}</Link>
-    // </nav>
     <nav style={{ display: "flex", gap: "2rem", width: "100%" }}>
       <Link to="/about">{iconElm(aboutMe)}</Link>
       <Link to="/chat">{iconElm(chats)}</Link>

@@ -15,6 +15,7 @@ import { isEqual } from "lodash";
 // import { exchangeCodeForToken } from "../Requests/accessTocken.requests";
 import { KEYCLOAK_INIT_CONFIG } from "../Constants/vars";
 import Keycloak from "keycloak-js";
+import react from "@vitejs/plugin-react";
 export type authContextType = {
   authenticated: boolean;
   error: string | null | {};
@@ -22,6 +23,7 @@ export type authContextType = {
   // getMe: () => UserInterface | null;
   logout: () => void;
   login: (clicked: boolean) => void;
+  register: () => void;
 };
 
 export const AuthContext = createContext<authContextType>({
@@ -31,10 +33,11 @@ export const AuthContext = createContext<authContextType>({
   // getMe: () => null,
   logout: () => null,
   login: (boolean) => null,
+  register: () => null,
 });
 
 export const AuthProvider = (props: { children: ReactNode }) => {
-  const { keycloak, login, error, authorized } = useKeycloak();
+  const { keycloak, login, error, authorized, register } = useKeycloak();
 
   const dispatch = useDispatch();
 
@@ -73,6 +76,7 @@ export const AuthProvider = (props: { children: ReactNode }) => {
         authenticated: authorized,
         error,
         login,
+        register,
       }}
     >
       {props.children}

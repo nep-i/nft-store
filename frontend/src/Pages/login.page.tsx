@@ -5,7 +5,7 @@ import { AuthContext } from "../Auth/Auth";
 import { useContext } from "react";
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, register } = useContext(AuthContext);
 
   return (
     <div className="card">
@@ -38,7 +38,9 @@ export default function Login() {
             icon="pi pi-user-plus"
             severity="success"
             className="w-10rem"
-            onClick={() => {}}
+            onClick={() => {
+              register();
+            }}
           ></Button>
         </div>
       </div>

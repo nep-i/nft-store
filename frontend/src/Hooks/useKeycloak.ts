@@ -3,7 +3,7 @@ import Keycloak, { KeycloakInstance } from "keycloak-js";
 import { KEYCLOAK_INIT_CONFIG } from "../Constants/vars";
 
 export const useKeycloak = () => {
-  const [keycloak, setKeycloak] = useState<Keycloak>(
+  const [keycloak, setKeycloak] = useState<KeycloakInstance>(
     //@ts-ignore
     new Keycloak(KEYCLOAK_INIT_CONFIG)
   );
@@ -45,10 +45,35 @@ export const useKeycloak = () => {
     }
   };
 
+  const register = async (): Promise<any> => {
+    if (!keycloak.didInitialize) {
+      const auth = await keycloak.init({
+        checkLoginIframe: false,
+      });
+      //@ts-ignore
+      await keycloak
+        .login({
+          action: "register",
+          redirectUri: KEYCLOAK_INIT_CONFIG.redirectUri,
+        })
+        //@ts-ignore
+        .then((auth: boolean) => {
+          if (auth) {
+            setAuthorized(auth);
+            setKeycloak(keycloak);
+          }
+        })
+        //@ts-ignore
+        .catch((error: any) => setError(error));
+      // }
+    }
+  };
+
   return {
     keycloak,
     error,
     login,
     authorized,
+    register,
   };
 };
