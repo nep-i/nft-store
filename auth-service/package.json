@@ -1,0 +1,25 @@
+{
+  "name": "auth-service",
+  "lockfileVersion": 3,
+  "requires": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "nodemon --watch './**/*.ts' --exec 'ts-node app.ts'"
+  },
+  "author": "nep-i",
+  "license": "ISC",
+  "packages": {},
+  "devDependencies": {
+    "@types/express": "^5.0.1"
+  },
+  "dependencies": {
+    "@types/axios": "^0.14.4",
+    "axios": "^1.9.0",
+    "express": "^5.1.0",
+    "loglevel": "^1.9.2",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

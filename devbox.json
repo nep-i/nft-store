@@ -6,7 +6,8 @@
     "bun@latest",
     "yarn@latest",
     "docker-compose@latest",
-    "http-server@latest"
+    "http-server@latest",
+    "python3@latest"
   ],
   "shell": {
     "init_hook": ["echo 'Welcome to devbox!' > /dev/null"],

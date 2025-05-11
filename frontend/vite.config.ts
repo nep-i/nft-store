@@ -11,17 +11,17 @@ export default defineConfig({
     host: "localhost",
     open: true,
     // historyApiFallback: true,
-    // proxy: {
-    //   "/graphql": {
-    //     target: "http://graphql:4000",
-    //     changeOrigin: true,
-    //     ws: true,
-    //   },
-    //   "/auth": {
-    //     target: "http://keycloak:8080",
-    //     changeOrigin: true,
-    //   },
-    // },
+    proxy: {
+      // "/graphql": {
+      //   target: "http://graphql:4000",
+      //   changeOrigin: true,
+      //   ws: true,
+      // },
+      // "/auth": {
+      //   target: "http://keycloak:8080",
+      //   changeOrigin: true,
+      // },
+    },
   },
   preview: {
     port: 3000,
