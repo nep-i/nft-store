@@ -45,7 +45,7 @@ services:
     ports:
       - "8001:8001"
     environment:
-      NOMGO_URL: mongo://user:password@mongodb:27017/database
+      MONGO_URL: mongo://user:password@mongodb:27017/database
       MINIO_ENDPOINT: minio:9000
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
@@ -152,7 +152,7 @@ services:
       - local-network
 
   graphql:
-    image: node:18
+    image: node:24.0.0
     working_dir: /app
     volumes:
       - ./graphql:/app
@@ -183,8 +183,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./persistent-data/db/postgres_schema.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - local-network
+      
+  # mongodb://user:password@localhost:27017/database?authSource=admin //to connect to mongo
   mongodb:
     image: mongo:latest
     environment:
@@ -195,12 +198,14 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+      - ./persistent-data/db/mongo_db.js:/docker-entrypoint-initdb.d/mongo-init.js
     networks:
       - local-network
   redis:
     image: redis:latest
     networks:
       - local-network
+
   keycloak:
     image: keycloak/keycloak:latest
     environment:
@@ -214,6 +219,11 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_HOSTNAME_URL: http://keycloak:8080
       KC_HOSTNAME: localhost
+      # KC_DB_URL: postgres://user:password@postgres:5432/database
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/database
+      KC_DB_USERNAME: user
+      KC_DB_PASSWORD: password
       # KC_HOSTNAME_STRICT: false
       # KEYCLOAK_FRONTEND_URL: http://localhost:3004
       KEYCLOAK_URL: http://keycloak:8080
@@ -221,11 +231,14 @@ services:
       KC_HOSTNAME_PORT: 8080
     ports:
       - "8080:8080"
+    volumes:
+      - ./persistent-data/kc-data:/opt/keycloak/data/import
     depends_on:
       - postgres
     networks:
       - local-network
-    command: start-dev
+    command: start-dev --import-realm
+
   glitchtip:
     image: glitchtip/glitchtip
     ports:

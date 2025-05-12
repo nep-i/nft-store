@@ -1,0 +1,135 @@
+type Metadata {
+  createdAt: String
+  updatedAt: String
+  timestamp: Int
+  modified: Boolean
+  extraData: JSON
+}
+
+type User {
+  id: String!
+  username: String!
+  email: String!
+  productsForSale: [Product!]
+  chats: [Chat!]
+  feed: Feed
+  productsOwn: [Product!]
+  metadata: Metadata
+}
+
+type Chat {
+  id: String!
+  participants: [User!]!
+  messages: [Message!]!
+  metadata: Metadata
+}
+
+type Message {
+  id: String!
+  sender: User!
+  content: String!
+  timestamp: String!
+  metadata: Metadata
+}
+
+type Post {
+  id: String!
+  user: User!
+  message: Message!
+  replies: [Message!]
+  timestamp: String!
+  metadata: Metadata
+}
+
+type Feed {
+  id: String!
+  posts: [Post!]!
+  metadata: Metadata
+}
+
+type BidHistory {
+  userId: String!
+  price: Float!
+}
+
+type Product {
+  id: String!
+  name: String!
+  owner: User!
+  startingPrice: Float!
+  currentPrice: Float!
+  bidHistory: [BidHistory!]!
+  reviews: [Review!]
+  artUrl: String!
+  metadata: Metadata
+}
+
+type Review {
+  user: User!
+  rating: Int!
+  comment: String!
+}
+
+type Cart {
+  id: String!
+  user: User!
+  products: [Product!]!
+  metadata: Metadata
+}
+
+type Favorites {
+  id: String!
+  user: User!
+  favoriteProducts: [Product!]!
+  metadata: Metadata
+}
+
+type Transaction {
+  id: String!
+  buyer: User!
+  seller: User!
+  product: Product!
+  amount: Float!
+  date: String!
+  metadata: Metadata
+}
+
+type TransactionHistory {
+  id: String!
+  user: User!
+  transactions: [Transaction!]!
+  metadata: Metadata
+}
+
+scalar JSON
+
+type Query {
+  user(id: String!): User
+  chat(id: String!): Chat
+  feed(id: String!): Feed
+  product(id: String!): Product
+  cart(id: String!): Cart
+  favorites(id: String!): Favorites
+  history(id: String!): TransactionHistory
+}
+
+type Mutation {
+  createUser(username: String!, email: String!): User!
+  createChat(participants: [String!]!): Chat!
+  sendMessage(chatId: String!, content: String!, senderId: String!): Message!
+  createPost(feedId: String!, userId: String!, messageId: String!): Post!
+  createProduct(
+    name: String!
+    ownerId: String!
+    startingPrice: Float!
+    artUrl: String!
+  ): Product!
+  addToCart(userId: String!, productId: String!): Cart!
+  addToFavorites(userId: String!, productId: String!): Favorites!
+  createTransaction(
+    buyerId: String!
+    sellerId: String!
+    productId: String!
+    amount: Float!
+  ): Transaction!
+}

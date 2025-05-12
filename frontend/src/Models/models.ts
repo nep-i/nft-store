@@ -7,7 +7,7 @@ export class Metadata {
       updatedAt?: Date;
       timestamp?: number;
       modified?: boolean;
-      extraData?: any; // Optional additional metadata
+      extraData?: any;
     } = {}
   ) {}
 
@@ -98,6 +98,11 @@ export class Feed extends BaseModel {
   }
 }
 
+type BidHistory = {
+  userId: number;
+  price: number;
+};
+
 export class Product extends BaseModel {
   constructor(
     public params: {
@@ -106,7 +111,7 @@ export class Product extends BaseModel {
       owner: User;
       startingPrice: number;
       currentPrice: number;
-      priceHistory: number[];
+      bidHistory: BidHistory[];
       metadata?: Metadata;
       reviews?: { user: User; rating: number; comment: string }[];
       artUrl: string;
@@ -123,7 +128,7 @@ export class Product extends BaseModel {
       owner: User.deserialize(input.owner),
       startingPrice: input.startingPrice,
       currentPrice: input.currentPrice,
-      priceHistory: input.priceHistory || [],
+      bidHistory: input.bidHistory || [],
       metadata: input.metadata
         ? Metadata.deserialize(input.metadata)
         : undefined,
@@ -222,7 +227,7 @@ export class Transaction extends BaseModel {
   }
 }
 
-export class History extends BaseModel {
+export class TransactionHistory extends BaseModel {
   constructor(
     public params: {
       id?: string;
@@ -234,8 +239,8 @@ export class History extends BaseModel {
     super(params);
   }
 
-  public static deserialize(input: any): History {
-    return new History({
+  public static deserialize(input: any): TransactionHistory {
+    return new TransactionHistory({
       id: input.id,
       user: User.deserialize(input.user),
       transactions: input.transactions.map((transaction: any) =>
