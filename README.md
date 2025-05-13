@@ -13,6 +13,7 @@ This project is a blockchain-based web application featuring an NFT store, real-
 - **Authentication**: Secure user management with Keycloak.
 - **Caching**: Redis for NFT image URLs.
 - **Monitoring**: Glitchtip for error tracking.
+- **To be added local sort of paypal in the future**
 
 ## Architecture
 
