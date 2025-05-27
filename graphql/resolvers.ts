@@ -52,11 +52,11 @@ export default {
       });
       return await response.json();
     },
-    sendMessage: async (_, { roomId, content, userId }) => {
+    sendMessage: async (_, { roomId, content, userId, type }) => {
       const response = await fetch("http://chat-service:3002/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roomId, content, userId }),
+        body: JSON.stringify({ roomId, content, userId, type }),
       });
       return await response.json();
     },

@@ -1,9 +1,14 @@
 {
   "dependencies": {
+    "@apollo/gateway": "^2.10.2",
+    "apollo-server-express": "^3.13.0",
     "body-parser": "^2.2.0",
     "corepack": "^0.32.0",
     "express": "^5.1.0",
+    "graphql-redis-subscriptions": "^2.7.0",
+    "graphql-ws": "^6.0.5",
     "npx": "^10.2.2",
+    "ws": "^8.18.2",
     "yarn": "^1.22.22"
   },
   "devDependencies": {
