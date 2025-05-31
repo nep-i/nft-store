@@ -14,3 +14,6 @@ class NFTRepository:
 
     def get_nft(self, nft_id):
         return self.collection.find_one({'id': nft_id})
+    
+    def get_nft_all(self, owner_id):
+        return self.collection.find_one({'owner_id': owner_id})

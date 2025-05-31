@@ -78,5 +78,19 @@ class NFTView(APIView):
             ExpiresIn=3600
         )
         nft['url'] = url
+        
+    def get_all(self, request, owner_id):
+        nft_all = self.repo.get_nft_all(owner_id)
+        if not nft_all:
+            return Response({'error': 'NFT not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response(NFTSerializer(nft).data, status=status.HTTP_200_OK)
+        urls = [
+            {'id': nft['id'], 'name': nft['name'], 'url': self.s3.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': 'nft-art', 'Key': f"{nft['id']}-{nft['name']}"},
+                ExpiresIn=3600
+            )}
+            for nft in nft_all
+        ]
+
+        return Response(urls, status=status.HTTP_200_OK)
