@@ -297,8 +297,10 @@ export class Message extends BaseModel {
   constructor(
     public params: {
       id?: string;
+      chatId: string;
       sender: User;
       content: string;
+      typeMessage: "permanent" | "temporary";
       timestamp: Date;
       metadata?: Metadata;
     }
@@ -310,6 +312,8 @@ export class Message extends BaseModel {
     return new Message({
       id: input.id,
       sender: User.deserialize(input.sender),
+      chatId: input.chatId,
+      typeMessage: input.typeMessage,
       content: input.content,
       timestamp: new Date(input.timestamp),
       metadata: input.metadata

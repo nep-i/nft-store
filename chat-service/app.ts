@@ -33,7 +33,6 @@ const typeDefs = `
   }
 `;
 
-// Resolvers
 const resolvers = {
   Query: {
     messages: async (_, { roomId }, { db }) => {
@@ -50,7 +49,7 @@ const resolvers = {
       { db, pubsub, redis }
     ) => {
       const message = {
-        id: Math.random().toString(36).slice(2), // Simple ID generation
+        id: Math.random().toString(36).slice(2),
         roomId,
         content,
         userId,
@@ -70,7 +69,6 @@ const resolvers = {
         );
       }
 
-      // Publish to subscribers
       await pubsub.publish(`MESSAGE_ADDED_${roomId}`, {
         messageAdded: message,
       });

@@ -1,4 +1,5 @@
 import { BaseApiRepository } from "../Repositories/baseApi.repository";
+import { BaseApolloRepository } from "../Repositories/baseApollo.repository";
 import { Store } from "redux";
 
 export type apiUrlType = {
@@ -15,13 +16,12 @@ export class RepositoryFactory {
   static requestTokenInterceptorCallback?: any;
   static responseErrorInterceptorCallback?: any;
   static store: Store<any>;
-
   private static apiUrl: apiUrlType = {
     baseUrl: "",
     apiSuffix: "",
   };
 
-  public static get<T extends BaseApiRepository>(
+  public static get<T extends BaseApiRepository | BaseApolloRepository>(
     RepositoryClass: new (...params: any[]) => T
   ): T {
     const repositoryId = new RepositoryClass().id;

@@ -6,6 +6,7 @@ import axios, {
 } from "axios";
 // import { RootOptions } from "react-dom/client";
 import { RepositoryFactory } from "./factory.repository";
+import { DocumentNode } from "@apollo/client";
 
 import log from "loglevel";
 
@@ -15,10 +16,10 @@ import { KeycloakInstance } from "keycloak-js";
 import { Buffer } from "buffer";
 
 export abstract class BaseApiRepository {
-  protected axiosInstance: AxiosInstance;
-  protected publicAxiosInstance: AxiosInstance;
+  axiosInstance: AxiosInstance;
+  publicAxiosInstance: AxiosInstance;
 
-  protected static getTheKeycloakFromTheStore = (): KeycloakInstance => {
+  static getTheKeycloakFromTheStore = (): KeycloakInstance => {
     return store.getState().auth.keycloak;
   };
 
@@ -70,12 +71,13 @@ export abstract class BaseApiRepository {
       }
     );
   }
+  model: any;
 
   private callIsPublic(isPublic: boolean): AxiosInstance {
     return isPublic ? this.publicAxiosInstance : this.axiosInstance;
   }
 
-  protected get(
+  public get(
     endpoint: string,
     config: AxiosRequestConfig = {},
     publicCall: boolean = false
@@ -87,7 +89,7 @@ export abstract class BaseApiRepository {
       });
   }
 
-  protected post(
+  public post(
     endpoint: string,
     data: any,
     config: AxiosRequestConfig = {},
@@ -100,7 +102,7 @@ export abstract class BaseApiRepository {
       });
   }
 
-  protected patch(
+  public patch(
     endpoint: string,
     data: any,
     config: AxiosRequestConfig = {}
@@ -112,13 +114,13 @@ export abstract class BaseApiRepository {
       });
   }
 
-  protected delete(endpoint: string): Promise<any> {
+  public delete(endpoint: string): Promise<any> {
     return this.axiosInstance.delete(endpoint).then((result: AxiosResponse) => {
       return result.data;
     });
   }
 
-  protected getFile(
+  public getFile(
     endpoint: string,
     config: AxiosRequestConfig = {}
   ): Promise<any> {
