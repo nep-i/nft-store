@@ -3,7 +3,12 @@ import { User } from "../models/models";
 import { UserRepository } from "../repositories/users.repositories";
 import { RepositoryFactory } from "../repositories/factory.repository";
 
-const Users: FC = () => {
+// Define props interface
+interface UsersProps {
+  myId?: string;
+}
+
+const Users: FC<UsersProps> = ({ myId }) => {
   const [users, setUsers] = useState<User[] | null>(null);
   const usersRepo = RepositoryFactory.get(UserRepository);
 
@@ -11,7 +16,7 @@ const Users: FC = () => {
   useEffect(() => {
     const createChat = async () => {
       try {
-        const users: User[] = await usersRepo;
+        const users: User[] = await usersRepo.getAllUsers();
       } catch (error) {
         console.error("Error creating chat:", error);
       }

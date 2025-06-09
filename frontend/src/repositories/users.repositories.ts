@@ -1,6 +1,7 @@
 import { BaseRepository } from "./base.repository";
 import { BaseModel } from "../models/base.model";
 import { gql, DocumentNode } from "@apollo/client";
+import { User } from "../models/models";
 
 export class UserModel extends BaseModel {
   // Example implementation
@@ -12,7 +13,7 @@ export class UserModel extends BaseModel {
   }
 }
 
-export class UserRepository extends BaseRepository<UserModel> {
+export class UserRepository extends BaseRepository<User> {
   protected getArrayQuery() {
     throw new Error("Method not implemented.");
   }
@@ -40,4 +41,23 @@ export class UserRepository extends BaseRepository<UserModel> {
   id = "users";
   endpoint = "users/";
   model = UserModel;
+
+  async getAllUsers(): Promise<User[] | null> {
+    const { result } = await this.mutation(this.getArrayQuery(), {}, true);
+
+    return result;
+  }
+
+  async getMyUsers(userId: string): Promise<User[] | null> {
+    const variables = {
+      userId,
+    };
+
+    const { result } = await this.mutation(
+      this.getSingleQuery(),
+      variables,
+      true
+    );
+    return result;
+  }
 }

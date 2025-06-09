@@ -1,4 +1,4 @@
-import { FC, useState, useContext } from "react";
+import { FC } from "react";
 
 const Chats: FC = () => {
   return (
