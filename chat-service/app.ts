@@ -25,6 +25,7 @@ const typeDefs = `
   }
 
   type Mutation {
+    createChat(participants: [String!]!): Chat!
     sendMessage(roomId: String!, content: String!, userId: String!, type: String!): Message!
   }
 
@@ -43,11 +44,25 @@ const resolvers = {
     },
   },
   Mutation: {
+    createChat: async (_, { participants }, { db }) => {
+      const chat = {
+        id: Math.random().toString(36).slice(2), // Generate unique ID
+        participants,
+        messages: [],
+        createdAt: new Date().toISOString(),
+      };
+      await db.collection("chats").insertOne(chat);
+      return chat;
+    },
     sendMessage: async (
       _,
       { roomId, content, userId, type },
       { db, pubsub, redis }
     ) => {
+      // Verify chat exists
+      const chat = await db.collection("chats").findOne({ id: roomId });
+      if (!chat) throw new Error(`Chat with id ${roomId} not found`);
+
       const message = {
         id: Math.random().toString(36).slice(2),
         roomId,
@@ -58,13 +73,15 @@ const resolvers = {
       };
 
       if (type === "permanent") {
-        // Store in MongoDB
         await db.collection("messages").insertOne(message);
+        // Update chat's messages array
+        await db
+          .collection("chats")
+          .updateOne({ id: roomId }, { $push: { messages: message } });
       } else if (type === "temporary") {
-        // Store in Redis with 24-hour expiry
         await redis.setex(
           `message:${message.id}`,
-          24 * 60 * 60, // 24 hours in seconds
+          24 * 60 * 60,
           JSON.stringify(message)
         );
       }

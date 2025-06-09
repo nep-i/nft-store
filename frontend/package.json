@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.13.8",
     "@react-keycloak/keycloak-ts": "^0.2.4",
     "@reduxjs/toolkit": "^2.7.0",
     "@sentry/browser": "^9.15.0",

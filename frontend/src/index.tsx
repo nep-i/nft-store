@@ -12,10 +12,10 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router";
 import { PrimeReactProvider } from "primereact/api";
-import { AuthProvider } from "./Auth/Auth";
+import { AuthProvider } from "./auth/Auth";
 import * as Sentry from "@sentry/browser";
 import { Provider } from "react-redux";
-import store from "./Store/store";
+import store from "./store/store";
 
 Sentry.init({
   dsn: "https://03270c2aab094dabbffc0cc26b918eb6@glitchtip.example.com/1",
