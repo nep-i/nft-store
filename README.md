@@ -1,5 +1,7 @@
 # NFT Store, Chat, and Forums Web Application
 
+[TASKS](/TASKS.md)
+
 - **NFT Store**: Buy, sell, and manage NFTs with metadata and asset storage.
 - **Chat**: Real-time messaging with high-throughput storage.
 - **Forums**: Structured discussion feeds with posts and replies.
