@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 import { KeycloakInstance } from "keycloak-js";
 // import { ACTIONS } from "../Store/Reducers/auth.reducer";
 import { useKeycloak } from "../hooks/useKeycloak";
@@ -10,12 +10,14 @@ import {
   setError,
   setToken,
   setRefToken,
+  setUser as setUserInStore,
 } from "../store/Reducers/auth.reducer";
 import { isEqual } from "lodash";
 // import { exchangeCodeForToken } from "../Requests/accessTocken.requests";
 import { KEYCLOAK_INIT_CONFIG } from "../constants/vars";
 import Keycloak from "keycloak-js";
-import react from "@vitejs/plugin-react";
+// import react from "@vitejs/plugin-react";
+import { User } from "../models/models";
 export type authContextType = {
   authenticated: boolean;
   error: string | null | {};
@@ -24,6 +26,7 @@ export type authContextType = {
   logout: () => void;
   login: (clicked: boolean) => void;
   register: () => void;
+  user: null | User;
 };
 
 export const AuthContext = createContext<authContextType>({
@@ -34,10 +37,20 @@ export const AuthContext = createContext<authContextType>({
   logout: () => null,
   login: (boolean) => null,
   register: () => null,
+  user: null,
 });
 
 export const AuthProvider = (props: { children: ReactNode }) => {
-  const { keycloak, login, error, authorized, register } = useKeycloak();
+  const {
+    keycloak,
+    login,
+    error,
+    authorized,
+    register,
+    registration,
+    setRegistration,
+  } = useKeycloak();
+  const [user, setUser] = useState<User | null>(null);
 
   const dispatch = useDispatch();
 
@@ -56,6 +69,24 @@ export const AuthProvider = (props: { children: ReactNode }) => {
   useEffect(() => {
     if (error && authState.error !== error) dispatch(setError(error));
   }, [error]);
+
+  useEffect(() => {
+    if (registration && !isEqual(authState.keycloak, keycloak)) {
+      if (keycloak.tokenParsed) {
+        const user = new User({
+          email: keycloak.tokenParsed["email"],
+          id: keycloak.tokenParsed["sub"],
+          username: keycloak.tokenParsed["username"],
+        });
+        dispatch(setUserInStore(user));
+      }
+      setUser(user);
+    }
+
+    return () => {
+      setRegistration(false);
+    };
+  }, [registration]);
 
   const logout = async () => {
     await keycloak?.logout();
@@ -77,6 +108,7 @@ export const AuthProvider = (props: { children: ReactNode }) => {
         error,
         login,
         register,
+        user,
       }}
     >
       {props.children}

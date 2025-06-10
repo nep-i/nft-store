@@ -1,4 +1,3 @@
-// components/Chat.tsx
 import React, { useState, useEffect, FC } from "react";
 import { RepositoryFactory } from "../repositories/factory.repository";
 import { MessageRepository } from "../repositories/message.repository";
@@ -15,7 +14,6 @@ const Chat: FC<{ userId: string; participantIds: string[] }> = ({
   const messageRepo = RepositoryFactory.get(MessageRepository);
   const chatRepo = RepositoryFactory.get(ChatRepository);
 
-  // Create chat
   useEffect(() => {
     const createChat = async () => {
       try {

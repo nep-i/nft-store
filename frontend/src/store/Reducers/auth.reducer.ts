@@ -3,6 +3,9 @@ import Keycloak, { KeycloakInstance } from "keycloak-js";
 // import { ActionDispatch } from "react";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { KEYCLOAK_INIT_CONFIG } from "../../constants/vars";
+import { access } from "fs/promises";
+import { KeycloakInstance } from "keycloak-js";
+import { User } from "../../models/models";
 
 // import {
 //   LOCAL_STORAGE_KEYCLOAK_TOKEN_PARSED,
@@ -24,6 +27,7 @@ export type AuthState = {
   keycloak: KeycloakInstance;
   token: string | null;
   refToken: string | null;
+  user: null | User;
 };
 
 export const authInitState: AuthState = {
@@ -34,6 +38,7 @@ export const authInitState: AuthState = {
   keycloak: new Keycloak(KEYCLOAK_INIT_CONFIG),
   token: null,
   refToken: null,
+  user: null,
 };
 
 // export type UserState = {
@@ -141,6 +146,9 @@ const authSlice = createSlice({
     setRefToken: (state, action: PayloadAction<string | null>) => {
       state.refToken = action.payload;
     },
+    setUser: (state, action: PayloadAction<User>) => {
+      state.user = { ...action.payload } as User;
+    },
   },
 });
 
@@ -151,5 +159,6 @@ export const {
   setKeycloakInstance,
   setToken,
   setRefToken,
+  setUser,
 } = authSlice.actions;
 export default authSlice.reducer;

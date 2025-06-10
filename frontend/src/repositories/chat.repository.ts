@@ -1,4 +1,3 @@
-// repositories/chatEntity.repository.ts
 import { BaseRepository } from "./base.repository";
 import { gql, DocumentNode } from "@apollo/client";
 import { Chat, User } from "../models/models";

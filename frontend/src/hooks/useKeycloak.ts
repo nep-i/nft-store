@@ -9,6 +9,7 @@ export const useKeycloak = () => {
   );
   const [error, setError] = useState<null | {}>(null);
   const [authorized, setAuthorized] = useState<boolean>(false);
+  const [registration, setRegistration] = useState<boolean>(false);
 
   const hashParams = new URLSearchParams(window.location.hash.substring(1));
   const code: string | null = hashParams.get("code");
@@ -61,6 +62,7 @@ export const useKeycloak = () => {
           if (auth) {
             setAuthorized(auth);
             setKeycloak(keycloak);
+            setRegistration(true);
           }
         })
         //@ts-ignore
@@ -75,5 +77,7 @@ export const useKeycloak = () => {
     login,
     authorized,
     register,
+    registration,
+    setRegistration,
   };
 };
