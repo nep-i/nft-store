@@ -23,7 +23,7 @@
   - **User Service**: Node.js with Keycloak.
 - **Databases**:
   - **PostgreSQL**: Stores `User`, `Feed`, `Post`, `Transaction` (structured, relational data).
-  - **MongoDB**: Stores `Chat`, `Message`, `Product`, `Cart`, `Favorites`, `History` (unstructured, high-write data).
+  - **MongoDB**: Stores `Chat`, `Message`, `Product`, `Cart`, `Favorites`, `History`
 - **Caching**: Redis for NFT art URLs.
 - **Storage**: MinIO for NFT assets.
 - **Routing**: Nginx for load balancing.
